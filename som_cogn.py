@@ -1,27 +1,18 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May  5 11:04:42 2022
-
-@author: FMAG0005
-"""
-
 import pandas as pd
 import numpy as np
 import os
 import sys
-sys.path.append('c:/users/fmag0005/appdata/roaming/python/python37/site-packages')
+from minisom import MiniSom
+import matplotlib.pyplot as plt
 
-os.chdir('H:/Cognition/SOM/')
-
-
-#%% Load Data
+# -- Load Data
 apdx = '_WAIS_FIQ_CANTAB_RVPA'
 
 data = pd.read_csv('cogn_data' + apdx + '.csv')
 data = data.drop('Unnamed: 0',axis=1)
 
-# Inverse tests
-# =============================================================================
+# -- Cognitive tests
+# --
 # SSPTotalerrors
 # SWM Strategy
 # SWM Totalerrors
@@ -31,7 +22,7 @@ data = data.drop('Unnamed: 0',axis=1)
 # IEDTotallatency
 # RTIMeansimplereactiontime
 # RVPMeanlatency
-# =============================================================================
+# --
 
 if 'CANTAB_IEDTotalerrorsadj' in data:
     data = data.assign(CANTAB_IEDTotalerrorsadj_neg = -1*data.CANTAB_IEDTotalerrorsadj)
@@ -45,55 +36,41 @@ if 'CANTAB_SWM_Strategy' in data:
     data = data.assign(CANTAB_SWM_Strategy_neg =  -1*data.CANTAB_SWM_Strategy)
     data = data.drop('CANTAB_SWM_Strategy',1)
 
-# Separating out the target
+# -- Separating out the target
 y = data.Subgroup.values
 y = y.astype(int)
 label_names = {0:'HC', 1:'UHR', 2:'FEP'}
 
-#%% Separating out the features
+# -- Separating out the features
 x = data.drop(['Group','ID_Num','Subgroup','Age','Gender'],1)
-
 features = x.columns.values
 
-# Imputing missing values with a KNN imputer
+# -- Imputing missing values with a KNN imputer
 from sklearn.impute import KNNImputer
 imputer = KNNImputer(n_neighbors=5)
 x = imputer.fit_transform(x)
 
-# data normalization
+# -- Data normalization
 x = (x - np.mean(x[y==0], axis=0)) / np.std(x[y==0], axis=0)
 
-#%%
-from minisom import MiniSom
-
-# This is the number of neurons in the SOM. This is very important to get right.
-# If you increase the numbers, you will get a better fit, but also take the risk of overfitting.
-# You get a "Net" with n x m neurons.
-# Best to have some reference when choosing.
-
-n_neurons = 2
-m_neurons = 3
+# -- SOM
+n_neurons = 2 # number of neurons in x axis
+m_neurons = 3 # number of neurons in y axis
 
 apdx = apdx + '_' + str(n_neurons*m_neurons)
 
-# You might have to install MiniSom
-# This is the SOM algorithm, with standard parameters
-# Definition:  MiniSom(x, y, input_len, sigma=1.0, learning_rate=0.5, decay_function=asymptotic_decay, neighborhood_function='gaussian', topology='rectangular', activation_distance='euclidean', random_seed=None)
 som = MiniSom(n_neurons, m_neurons, x.shape[1], sigma=1.5, learning_rate=.5, neighborhood_function='gaussian', random_seed=0) 
 
-# We initiate it with PCA (faster) and train it for 1000 steps
-som.pca_weights_init(x)
-som.train(x, 1000, verbose=True)  # random training
+# -- Initialization
+som.pca_weights_init(x) # initialize weights with PCA
+som.train(x, 1000, verbose=True)  # random training, 1000 iterations
 
-#%% Plot SOM
-import matplotlib.pyplot as plt
-
+# -- Plot
 plt.figure(figsize=(9, 9))
-
 plt.pcolor(som.distance_map().T, cmap='bone_r')  # plotting the distance map as background
 plt.colorbar()
 
-# Plotting the response for each pattern
+# Response patterns
 markers = ['o', 's', 'D']
 colors = ['C0', 'C1', 'C2']
 
@@ -107,11 +84,8 @@ for cnt, xx in enumerate(x):
              markersize=12, markeredgewidth=2)
 
 plt.savefig('som_results/response_winner' + apdx + '.png')
-plt.show()
 
-#%% Scatter plot of points in certain node, colourcoded with classes. Each node (here as box) represents one cognitive profile.
-
-# get the winner node coordinate (x and y) for each subject
+# winner node coordinate (x and y) for each subject
 w_x, w_y = zip(*[som.winner(d) for d in x])
 w_x = np.array(w_x)
 w_y = np.array(w_y)
@@ -135,12 +109,9 @@ for c in np.unique(y):
 plt.legend(loc='upper right')
 plt.grid()
 plt.savefig('som_results/response_winner_pattern' + apdx + '.png')
-plt.show()
 
-#%% Plot the class distributions in each neuron
-
-fig, axs  = plt.subplots(n_neurons,m_neurons,figsize=(8,8))
-                         
+# -- Class distributions in each neuron
+fig, axs  = plt.subplots(n_neurons,m_neurons,figsize=(8,8))             
 labels_map = som.labels_map(x, [label_names[t] for t in y])
 
 for position in labels_map.keys():
@@ -151,7 +122,7 @@ for position in labels_map.keys():
 plt.savefig('som_results/repronse_winner_distribution' + apdx + '.png')    
 plt.show()
 
-#%% Make a spyder plot of averages in cognitive profiles
+# Spyder plots of averages in cognitive profiles
 
 labels_map = som.labels_map(x, [label_names[t] for t in y])
 meanProfDf = pd.DataFrame(dict(tests = features))
@@ -165,8 +136,6 @@ meanProfDf = meanProfDf.append(meanProfDf.iloc[0])
 
 labels = meanProfDf.tests.values        
         
-#meanProfDb = pd.DataFrame(dict(r = meanProf, theta = features))
-
 label_loc = np.linspace(start=0, stop=2 * np.pi, num=len(labels))
 
 plt.figure(figsize=(8, 8))
@@ -179,9 +148,8 @@ for position in labels_map.keys():
 lines, labels = plt.thetagrids(np.degrees(label_loc), labels=features)
 plt.legend()
 plt.savefig('som_results/repronse_mean_profiles' + apdx + '.png')
-plt.show()
 
-#%% Split cognitive profiles and plot spyder plots
+# Split cognitive profiles and plot spyder plots
 
 fig, axs  = plt.subplots(n_neurons,m_neurons,figsize=(20,20), subplot_kw={'projection': 'polar'})
 
@@ -198,7 +166,7 @@ for position in labels_map.keys():
     
 plt.savefig('som_results/repronse_mean_profiles_subfig' + apdx + '.png')
  
-#%% Plot mean and standard deviation of cognitive profiles
+# Plot mean and standard deviation of cognitive profiles
 plt.figure(figsize=(8, 8))
 
 meanProfDf = pd.DataFrame(dict(tests = features))

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed May  4 15:37:27 2022
 
@@ -11,13 +10,23 @@ import os
 import argparse
 
 #%%
+# Parsing arguments from command line
 parser = parser = argparse.ArgumentParser()
-parser.add_argument('--basedir', help='Base directory')
-parser.add_argument('cogn_tests', help='List of cognitive tests to run')
+parser.add_argument('--basedir', help='Base directory') # working directory, data should be here
+parser.add_argument('--cog_tests', help='Cognitive tests to include in the analysis', #cognitive tests to include into the analysis
+                    default = [
+                        "WAIS_FIQ",
+                        "CANTAB_RVPA",
+                        "CANTAB_SWM_Strategy",
+                        "BACS_numbersequencetotalcorrect",
+                        "BACS_Fluency_Total",
+                        "BACS_Symbolnumbersnrcorrec",
+                        "CANTAB_IEDTotalerrorsadj"
+                        ])
 
-base_dir = parser['--base_dir']
+args = parser.parse_args()
+
 os.chdir()
-
 data = pd.read_excel('PCA_FAB_COG_W_DART.xlsx', error_bad_lines=False)
 
 #%% Import the data
@@ -32,8 +41,6 @@ msno.matrix(data)
 #%% Select choosen features
 import numpy as np
 
-
-
 # Transform features into the right datatype
 data.Group = data.Group.astype("category")
 data.Subgroup = data.Subgroup.astype("category")
@@ -45,24 +52,8 @@ data.Gender = data.Gender.astype("category")
 drop_idx = [165]
 data = data.drop(index = drop_idx)
 
-#"DART",
-#"CANTAB_RVPA",
-#"WAIS_FIQ",
-#"CANTAB_SWM_Totalerrors",
-
 # Select subset of data
-data = data[["ID_Num",
-             "Group",
-             "Subgroup",
-             "Age",
-             "Gender",
-             "WAIS_FIQ",
-             "CANTAB_RVPA",
-             "CANTAB_SWM_Strategy",
-             "BACS_numbersequencetotalcorrect",
-             "BACS_Fluency_Total",
-             "BACS_Symbolnumbersnrcorrec",
-             "CANTAB_IEDTotalerrorsadj"]]
+data = data[["ID_Num","Group","Subgroup","Age"] + args.cog_tests]
 
 # Separating out the target
 y = data.Subgroup.values

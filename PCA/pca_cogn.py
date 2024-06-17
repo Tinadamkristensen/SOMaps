@@ -8,8 +8,15 @@ Created on Wed May  4 15:37:27 2022
 #%%
 import pandas as pd
 import os
+import argparse
 
-os.chdir('H:/Cognition/PCA/')
+#%%
+parser = parser = argparse.ArgumentParser()
+parser.add_argument('--basedir', help='Base directory')
+parser.add_argument('cogn_tests', help='List of cognitive tests to run')
+
+base_dir = parser['--base_dir']
+os.chdir()
 
 data = pd.read_excel('PCA_FAB_COG_W_DART.xlsx', error_bad_lines=False)
 
@@ -24,6 +31,8 @@ msno.matrix(data)
 
 #%% Select choosen features
 import numpy as np
+
+
 
 # Transform features into the right datatype
 data.Group = data.Group.astype("category")

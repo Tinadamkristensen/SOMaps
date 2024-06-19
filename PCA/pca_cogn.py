@@ -12,21 +12,9 @@ import argparse
 #%%
 # Parsing arguments from command line
 parser = parser = argparse.ArgumentParser()
-parser.add_argument('--basedir', help='Base directory') # working directory, data should be here
-parser.add_argument('--cog_tests', help='Cognitive tests to include in the analysis', #cognitive tests to include into the analysis
-                    default = [
-                        "WAIS_FIQ",
-                        "CANTAB_RVPA",
-                        "CANTAB_SWM_Strategy",
-                        "BACS_numbersequencetotalcorrect",
-                        "BACS_Fluency_Total",
-                        "BACS_Symbolnumbersnrcorrec",
-                        "CANTAB_IEDTotalerrorsadj"
-                        ])
-
+parser.add_argument('--basedir', help='Base directory', default = os.getcwd()) # working directory, data should be here. Default is the current directory
+parser.add_argument('--cog_tests', help='Cognitive tests to include in the analysis') #cognitive tests to include into the analysis
 args = parser.parse_args()
-
-os.chdir()
 data = pd.read_excel('PCA_FAB_COG_W_DART.xlsx', error_bad_lines=False)
 
 #%% Import the data

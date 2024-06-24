@@ -2,12 +2,32 @@
 
 This is a code base to reproduce our paper on _Cognitive profiles across the psychosis continuum_, available [ADD LINK]().
 
-To run the PCA analysis with all tests, run:
+You can create a environment running the following command.
 ```bash
-python pca_cogn.py --cog_tests WAIS_FIQ CANTAB_RVPA CANTAB_SWM_Strategy
+conda env create -f requirements.yml
 ```
 
-To run the PCA analysis with the seven selected tests, run:
+(1) To run the PCA analysis:
 ```bash
-python pca_cogn.py --cog_tests WAIS_FIQ CANTAB_RVPA CANTAB_SWM_Strategy BACS_numbersequencetotalcorrect BACS_Fluency_Tota BACS_Symbolnumbersnrcorrec CANTAB_IEDTotalerrorsadj
+# With all subjects
+python PCA/pca_cogn.py --population ALL
+
+# With Antipsychotic naive subjects only
+python PCA/pca_cogn.py --population AP_naive
+```
+
+(2) To run the SOM analysis:
+```bash
+# With all subjects and standardization based on HC
+python SOM/som_cogn.py --norm HC --population AP_naive
+
+# With Antipsychotic naive subjects only and standardization based on HC
+python SOM/som_cogn.py --norm HC --population ALL
+
+# With all subjects and standardization based on entire opulation
+python SOM/som_cogn.py --norm ALL --population ALL
+
+# With Antipsychotic naive subjects only and standardization based on entire population
+python SOM/som_cogn.py --norm ALL --population AP_naive
+
 ```

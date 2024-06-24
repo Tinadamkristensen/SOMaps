@@ -1,115 +1,73 @@
-"""
-Created on Wed May  4 15:37:27 2022
-
-@author: FMAG0005
-"""
-
-#%%
 import pandas as pd
 import os
 import argparse
+import missingno as msno
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+import seaborn as sns
 
-#%%
+
+
 # Parsing arguments from command line
 parser = parser = argparse.ArgumentParser()
-parser.add_argument('--basedir', help='Base directory', default = os.getcwd()) # working directory, data should be here. Default is the current directory
-parser.add_argument('--cog_tests', help='Cognitive tests to include in the analysis') #cognitive tests to include into the analysis
+parser.add_argument('--base_dir', help='Base directory', default = os.getcwd()) # working directory, data should be here. Default is the current directory
+parser.add_argument('--data_path', help='Path to data file', default='data/CogProf.Final.xlsx')
+parser.add_argument('--population', help="Set >ALL< or >AP_naive< for antipyschotic naive polution", default='ALL')
+
 args = parser.parse_args()
-data = pd.read_excel('PCA_FAB_COG_W_DART.xlsx', error_bad_lines=False)
+base_dir = args.base_dir
+data_path = args.data_path
+ap_naive = args.population == 'AP_naive'
 
-#%% Import the data
-import missingno as msno
-msno.matrix(data)
-
-#%%
-#data = data.drop(index = [37, 40, 81, 87, 113, 132, 158, 166, 172, 282, 283, 293, 302, 313])
-#msno.matrix(data)
-# eventually also 240, 245, 250
-
-#%% Select choosen features
-import numpy as np
+data = pd.read_excel(os.path.join(base_dir, args.data_path))
+cogn_tests = data.columns[-7:]
 
 # Transform features into the right datatype
 data.Group = data.Group.astype("category")
 data.Subgroup = data.Subgroup.astype("category")
-data.ID_Num = data.ID_Num.astype(int)
+data.AP_Naive = data.AP_Naive.astype("category")
+data.ID = data.ID.astype(int)
 data.Age = data.Age.apply(np.floor).astype(int)
 data.Gender = data.Gender.astype("category")
 
-# drop idx
-drop_idx = [165]
-data = data.drop(index = drop_idx)
-
-# Select subset of data
-data = data[["ID_Num","Group","Subgroup","Age"] + args.cog_tests]
+# Antipsychotic naive
+if ap_naive:
+    data = data[data.AP_Naive==1]
+    apdx = '_ap_naive'
+else:
+    apdx = '_'
 
 # Separating out the target
 y = data.Subgroup.values
 
 # Separating out the features
-x = data.drop(['Group','ID_Num','Subgroup','Age','Gender'],axis=1)
+x = data[cogn_tests].values
 
-features = x.columns.values
-x = x.loc[:,:].values
-
-apdx = '_' + '_'.join(features[0:2])
-
-data.to_csv('cogn_data' + apdx + '.csv')
-
-msno.matrix(data)
-
-#%% Prepare data
-# Imputing missing values using a KNN Imputer
-from sklearn.impute import KNNImputer
-imputer = KNNImputer(n_neighbors=5)
-x = imputer.fit_transform(x)
-
-# Standardizing the features, need for PCA!
-from sklearn.preprocessing import StandardScaler
-x = StandardScaler().fit_transform(x)
-
-#%% Double check whether we have missing values
-msno.matrix(pd.DataFrame(x))
-
-
-#%% Perform PCA, choose the frist three PCs
-from sklearn.decomposition import PCA
-
-pca = PCA(n_components=6)
-
-principalComponents = pca.fit_transform(x)
-
-principalDf = pd.DataFrame(data = principalComponents
-             , columns = ['PC1','PC2','PC3','PC4','PC5','PC6'])
-
+# PCA
+pca = PCA(n_components=len(cogn_tests))
+principalComponents = pca.fit_transform(x-x.mean(axis=0))
+principalDf = pd.DataFrame(data = principalComponents, columns = ['PC' + str(i+1) for i in range(len(cogn_tests))])
 finalDf = pd.concat([principalDf.get(['PC1','PC2','PC3']), data['Subgroup'], data['Group']], axis = 1)
 
-#%% Plot PCs
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Plot PCs
+sns.set_theme(style="white", palette=["r","g","b"])
+fig = plt.figure(figsize = (8,8))
+ax = sns.scatterplot(data=finalDf, x='PC1', y='PC2', hue='Subgroup', alpha=0.7, style="Group")
+ax.set_aspect('equal', adjustable='box')
+plt.savefig('PCA/results/pc1pc2' + apdx + '.png')
 
 fig = plt.figure(figsize = (8,8))
-ax = sns.scatterplot('PC1', 'PC2', data=finalDf, hue='Subgroup', palette=["r","g","b"], alpha=0.7, style="Group")
+ax = sns.scatterplot(data=finalDf, x='PC1', y='PC3', hue='Subgroup', alpha=0.7, style="Group")
 ax.set_aspect('equal', adjustable='box')
-plt.savefig('pc1pc2' + apdx + '.png')
-plt.show()
-plt.clf()
+plt.savefig('PCA/results/pc1pc3' + apdx + '.png')
 
 fig = plt.figure(figsize = (8,8))
-ax = sns.scatterplot('PC1', 'PC3', data=finalDf, hue='Subgroup', palette=["r","g","b"], alpha=0.7, style="Group")
+ax = sns.scatterplot(data=finalDf, x='PC2', y='PC3', hue='Subgroup', alpha=0.7, style="Group")
 ax.set_aspect('equal', adjustable='box')
-plt.savefig('pc1pc3' + apdx + '.png')
-plt.show()
-plt.clf()
+plt.savefig('PCA/results/pc2pc3' + apdx + '.png')
 
-fig = plt.figure(figsize = (8,8))
-ax = sns.scatterplot('PC2', 'PC3', data=finalDf, hue='Subgroup', palette=["r","g","b"], alpha=0.7, style="Group")
-ax.set_aspect('equal', adjustable='box')
-plt.savefig('pc2pc3' + apdx + '.png')
-plt.show()
-plt.clf()
-
-#%% Plot variance explained
+# Plot variance explained
 pca_expvar = pca.explained_variance_ratio_
 pca_cums_ev = pca_expvar.cumsum()
 
@@ -118,30 +76,28 @@ fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1)
 ax.set_xlabel('Principal Components', fontsize = 15)
 ax.set_ylabel('Cumulative Explained Variance', fontsize = 15)
-ax.bar(['PC1','PC2','PC3','PC4','PC5','PC6'], pca_cums_ev)
-plt.savefig('cumExpVar' + apdx + '.png')
+ax.bar(['PC' + str(i+1) for i in range(len(cogn_tests))], pca_cums_ev)
+plt.savefig('PCA/results/cumExpVar' + apdx + '.png')
 
 
-#%% Loadings of all 6 PCs as heatmap
+# Loadings of all 6 PCs as heatmap
 pcaComp = pca.components_
-pcaCompDf = pd.DataFrame(pcaComp,index=['PC1','PC2','PC3','PC4','PC5','PC6'],columns=features)
-
-import seaborn as sns
+pcaCompDf = pd.DataFrame(pcaComp, index=['PC' + str(i+1) for i in range(len(cogn_tests))], columns=cogn_tests)
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1)
 ax = sns.heatmap( pcaCompDf , linewidth = 0.5 , cmap = 'coolwarm' )
 plt.yticks(rotation=0)
-plt.savefig('pcLoadings' + apdx + 'png',bbox_inches='tight')
+plt.savefig('PCA/results/pcLoadings' + apdx + 'png',bbox_inches='tight')
 
-#%% Loadings of first 3 PCs as barplot
-pcaCompSelDf = pcaCompDf.transpose().drop(['PC4','PC5','PC6'],1)
+# Loadings of first 3 PCs as barplot
+pcaCompSelDf = pcaCompDf.transpose().get(['PC1','PC2','PC3'])
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1)
 ax = pcaCompSelDf.plot.bar()
 plt.ylim(-.45,.45)
 ax.set_ylabel('Loadings', fontsize = 15)
-plt.savefig('pc123overTests' + apdx + '.png',bbox_inches='tight')
+plt.savefig('PCA/results/pc123overTests' + apdx + '.png',bbox_inches='tight')
 
 

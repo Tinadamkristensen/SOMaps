@@ -12,7 +12,7 @@ import seaborn as sns
 # Parsing arguments from command line
 parser = parser = argparse.ArgumentParser()
 parser.add_argument('--base_dir', help='Base directory', default = os.getcwd()) # working directory, data should be here. Default is the current directory
-parser.add_argument('--data_path', help='Path to data file', default='data/CogProf.Final.xlsx')
+parser.add_argument('--data_path', help='Path to data file', default='data/CogProf.Final_FAB2xlsx')
 parser.add_argument('--population', help="Set >ALL< or >AP_naive< for antipyschotic naive polution", default='ALL')
 
 args = parser.parse_args()

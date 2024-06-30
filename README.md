@@ -24,10 +24,11 @@ python SOM/som_cogn.py --norm HC --population AP_naive
 # With Antipsychotic naive subjects only and standardization based on HC
 python SOM/som_cogn.py --norm HC --population ALL
 
+# With Antipsychotic naive subjects only and standardization based on entire population
+python SOM/som_cogn.py --norm ALL --population AP_naive
+
 # With all subjects and standardization based on entire opulation
 python SOM/som_cogn.py --norm ALL --population ALL
 
-# With Antipsychotic naive subjects only and standardization based on entire population
-python SOM/som_cogn.py --norm ALL --population AP_naive
 
 ```

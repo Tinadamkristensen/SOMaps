@@ -23,7 +23,7 @@ parser = parser = argparse.ArgumentParser()
 parser.add_argument('--base_dir', help='Base directory', default = os.getcwd()) # working directory, data should be here. Default is the current directory
 parser.add_argument('--data_path', help='Path to data file', default='data/CogProf.Final.xlsx')
 parser.add_argument('--population', help="Set >ALL< or >AP_naive< for antipyschotic naive polution", default='ALL')
-parser.add_argument('--norm', help="Set to >ALL< or >HC< for normalization based on HC only", default='ALL')
+parser.add_argument('--norm', help="Set to >ALL< or >HC< for normalization based on HC only, or >NONE< for no normalization", default='ALL')
 
 
 args = parser.parse_args()
@@ -86,13 +86,17 @@ label_names = {1:'HC', 2:'UHR', 3:'FEP'}
 x = data[cogn_tests].values
 
 # data normalization
-if hc_norm:
+if norm == 'HC':
     x = (x - x[y==1].mean(axis=0)) / x[y==1].std(axis=0)
     apdx += '_hc_norm'
-else:
+elif norm == 'ALL':
     x = (x - x.mean(axis=0)) / x.std(axis=0)
     apdx += '_pop_norm'
-
+elif norm=='NONE':
+     apdx += '_no_norm'
+else:
+     print('Norm not implemented')
+     quit()
 
 # This is the number of neurons in the SOM. This is very important to get right.
 # If you increase the numbers, you will get a better fit, but also take the risk of overfitting.

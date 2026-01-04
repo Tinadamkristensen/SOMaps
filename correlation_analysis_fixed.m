@@ -1,3 +1,8 @@
+% MATLAB Correlation Analysis Script with Partial Correlations
+% This script computes partial correlations between ROI and cognitive variables,
+% controlling for age and sex as covariates.
+%
+% IMPORTANT: Update the file path below to point to your data file
 clear all
 close all
 
@@ -219,9 +224,11 @@ xFit = linspace(min(X_res), max(X_res), 100)';
 % Plot
 figure; hold on;
 
-% Scatter points
-scatter(X_res, Y_res, 40, 'filled', ...
-    'MarkerFaceAlpha', 0.7);
+% Get group data for coloring
+g = db1.Group(validRows);
+
+% Scatter points colored by group
+gscatter(X_res, Y_res, g, [], [], 40, 'off');
 
 % Confidence interval (lighter shade)
 fill([xFit; flipud(xFit)], ...
@@ -241,6 +248,7 @@ title(sprintf('Partial relationship: %s vs %s', ...
 
 set(gca,'FontSize',12);
 box on;
+legend('show');
 
 % FIX: Use partialcorr to match the correlation matrix calculation
 % This computes the partial correlation controlling for age and sex
@@ -251,6 +259,3 @@ text(0.05, 0.95, ...
     'Units','normalized', ...
     'VerticalAlignment','top', ...
     'FontSize',11);
-
-g = db1.Group(validRows);
-gscatter(X_res, Y_res, g);

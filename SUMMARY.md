@@ -3,7 +3,10 @@
 ## Files in This Repository
 
 ### 1. `correlation_analysis_fixed.m`
-The complete corrected MATLAB script with the fix applied. This is a ready-to-use version of your script with the correlation mismatch resolved.
+The complete corrected MATLAB script with the fix applied. This is a ready-to-use version of your script with the correlation mismatch resolved. The script now includes:
+- **Bubble plot visualization** for the correlation matrix showing effect size, directionality, and significance levels
+- **FDR correction** using Benjamini-Hochberg method
+- Consistent use of partial correlations throughout
 
 ### 2. `CORRELATION_FIX_README.md`
 Comprehensive documentation that explains:
@@ -23,7 +26,7 @@ A quick reference guide showing:
 The scatterplot displayed different rho and p-values than the correlation matrix heatmap for the same variable pair.
 
 ## The Solution
-**Line 247** in `correlation_analysis_fixed.m`:
+**Line 255** in `correlation_analysis_fixed.m`:
 ```matlab
 [r, p] = partialcorr(X, Y, C);
 ```
@@ -32,6 +35,15 @@ The scatterplot displayed different rho and p-values than the correlation matrix
 ```matlab
 [r,p] = corr(X_res, Y_res);
 ```
+
+## Correlation Matrix Visualization
+The script now uses a **bubble plot** instead of a traditional heatmap:
+- **Circle size**: Represents effect size (absolute correlation magnitude)
+- **Color**: Represents directionality (positive/negative correlation) using turbo colormap
+- **Transparency**: Represents significance level:
+  - FDR-corrected significant (q < 0.05): Full opacity (vivid)
+  - Raw significant (p < 0.05): 50% opacity (intermediate)
+  - Non-significant: 15% opacity (very transparent)
 
 ## Why This Matters
 - **Correlation matrix**: Uses `partialcorr()` to control for age and sex
@@ -42,7 +54,7 @@ The scatterplot displayed different rho and p-values than the correlation matrix
 
 ### Option 1: Use the Complete Fixed Script
 1. Replace your script with `correlation_analysis_fixed.m`
-2. Update the file path on line 3 to point to your data
+2. Update the file path on line 9 to point to your data
 3. Run the script
 
 ### Option 2: Apply Minimal Change to Your Existing Script
@@ -54,9 +66,9 @@ The scatterplot displayed different rho and p-values than the correlation matrix
 ## Verification
 After applying the fix:
 1. Run your script
-2. Note the correlation value in the heatmap for your chosen ROI × cognitive variable
+2. Note the correlation value in the bubble plot for your chosen ROI × cognitive variable
 3. Generate the scatterplot
-4. The displayed rho and p-value should now **exactly match** the heatmap value
+4. The displayed rho and p-value should now **exactly match** the bubble plot value
 
 ## Technical Details
 See `CORRELATION_FIX_README.md` for detailed technical explanation of why `partialcorr()` and `corr()` on residuals produce different results.

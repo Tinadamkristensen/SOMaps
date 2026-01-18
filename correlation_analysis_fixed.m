@@ -143,7 +143,7 @@ for i = 1:nROI
     results(i).pval = pval;
 end
 
-%% Heatmap (rho values + significance)
+%% Bubble plot: Correlation matrix with effect size and significance
 
 nCog = numel(cognitiveVars);
 
@@ -160,11 +160,68 @@ alpha = 0.05;
 roiLabels = strrep(roiVars, '_', '\_');
 cogLabels = strrep(cognitiveVars, '_', '\_');
 
-figure;
-imagesc(correlationMatrix);
-colormap(turbo(256));
-caxis([-0.5 0.5]);
-colorbar;
+% ===========================================================
+% FDR correction across all ROI × cognitive correlations
+% ===========================================================
+
+pvals_vec = pMatrix(:);                             % vectorize all p-values
+qvals_vec = mafdr(pvals_vec, 'BHFDR', true);        % Benjamini–Hochberg
+qMatrix   = reshape(qvals_vec, size(pMatrix));      % reshape back
+
+% ===========================================================
+% Create bubble plot with circles
+% ===========================================================
+
+figure('Position', [100, 100, 1200, 800]);
+hold on;
+
+% Get colormap for directionality (turbo colormap)
+cmap = turbo(256);
+cmap_center = 128;  % Center of colormap (near zero correlation)
+
+% Maximum circle size (in points)
+max_bubble_size = 1000;
+
+% Plot each correlation as a circle
+for i = 1:nROI
+    for j = 1:nCog
+        rho = correlationMatrix(i,j);
+        p_val = pMatrix(i,j);
+        q_val = qMatrix(i,j);
+        
+        % Circle size based on effect size (absolute correlation)
+        bubble_size = abs(rho) * max_bubble_size;
+        
+        % Determine color intensity based on significance level
+        if q_val < 0.05
+            % FDR significant: full intensity (alpha = 1.0)
+            alpha_val = 1.0;
+        elseif p_val < 0.05
+            % Raw significant: intermediate intensity (alpha = 0.5)
+            alpha_val = 0.5;
+        else
+            % Non-significant: very transparent (alpha = 0.15)
+            alpha_val = 0.15;
+        end
+        
+        % Get color based on correlation direction
+        % Map rho from [-0.5, 0.5] to colormap indices
+        color_idx = round((rho + 0.5) / 1.0 * 255) + 1;
+        color_idx = max(1, min(256, color_idx));  % clamp to valid range
+        circle_color = cmap(color_idx, :);
+        
+        % Plot circle at position (j, i) with size and color
+        scatter(j, i, bubble_size, circle_color, 'filled', ...
+            'MarkerFaceAlpha', alpha_val, ...
+            'MarkerEdgeColor', 'none');
+    end
+end
+
+% Set axis properties
+xlim([0.5, nCog + 0.5]);
+ylim([0.5, nROI + 0.5]);
+axis ij;  % Flip y-axis to match matrix convention
+axis equal;
 axis tight;
 
 set(gca, ...
@@ -173,25 +230,49 @@ set(gca, ...
     'YTick', 1:nROI, ...
     'YTickLabel', roiLabels, ...
     'TickLabelInterpreter', 'tex', ...
-    'FontSize', 8);
+    'FontSize', 8, ...
+    'Box', 'on', ...
+    'Layer', 'top');
 
 xtickangle(45);
 
 xlabel('Cognitive Measures');
 ylabel('Regions of Interest');
-title('Partial correlations (rho), * p < 0.05');
+title('Partial correlations: Circle size = effect size, Color = direction, Intensity = significance');
 
-for i = 1:nROI
-    for j = 1:nCog
-        if pMatrix(i,j) < alpha
-            text(j, i, '*', ...
-                'HorizontalAlignment', 'center', ...
-                'VerticalAlignment', 'middle', ...
-                'FontSize', 10, ...
-                'FontWeight', 'bold');
-        end
-    end
-end
+% Add colorbar for directionality
+colormap(cmap);
+caxis([-0.5 0.5]);
+cb = colorbar;
+cb.Label.String = 'Correlation (rho)';
+
+% Add legend for significance levels
+legend_x = nCog + 1;
+legend_y_base = nROI * 0.2;
+legend_spacing = nROI * 0.15;
+
+% Example circles for legend
+legend_size = 300;
+
+% FDR significant
+scatter(legend_x, legend_y_base, legend_size, [0.5 0.5 0.5], 'filled', ...
+    'MarkerFaceAlpha', 1.0, 'MarkerEdgeColor', 'k', 'LineWidth', 0.5);
+text(legend_x + 0.3, legend_y_base, 'q < 0.05 (FDR)', ...
+    'FontSize', 8, 'VerticalAlignment', 'middle');
+
+% Raw significant
+scatter(legend_x, legend_y_base + legend_spacing, legend_size, [0.5 0.5 0.5], 'filled', ...
+    'MarkerFaceAlpha', 0.5, 'MarkerEdgeColor', 'k', 'LineWidth', 0.5);
+text(legend_x + 0.3, legend_y_base + legend_spacing, 'p < 0.05 (raw)', ...
+    'FontSize', 8, 'VerticalAlignment', 'middle');
+
+% Non-significant
+scatter(legend_x, legend_y_base + 2*legend_spacing, legend_size, [0.5 0.5 0.5], 'filled', ...
+    'MarkerFaceAlpha', 0.15, 'MarkerEdgeColor', 'k', 'LineWidth', 0.5);
+text(legend_x + 0.3, legend_y_base + 2*legend_spacing, 'n.s.', ...
+    'FontSize', 8, 'VerticalAlignment', 'middle');
+
+hold off;
 
 %% Scatterplot: ROI vs cognitive function (partial regression)
 

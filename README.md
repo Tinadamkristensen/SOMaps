@@ -11,7 +11,10 @@ This repository also includes a fix for a MATLAB correlation analysis script whe
 - **[BUBBLE_PLOT_VISUAL.md](BUBBLE_PLOT_VISUAL.md)** - Visual examples and interpretation
 - **[QUICK_FIX.md](QUICK_FIX.md)** - Quick reference for applying the fix
 - **[CORRELATION_FIX_README.md](CORRELATION_FIX_README.md)** - Detailed technical explanation
-- **[correlation_analysis_fixed.m](correlation_analysis_fixed.m)** - Complete corrected MATLAB script
+
+### MATLAB Scripts
+- **[spectrum_correlation_analysis.m](spectrum_correlation_analysis.m)** - Complete script for SPECTRUM study data (FD_ ROIs, COG_ variables)
+- **[correlation_analysis_fixed.m](correlation_analysis_fixed.m)** - Original example script (FA_ ROIs)
 
 ### Bubble Plot Features
 - **Circle size** = Effect size (correlation magnitude)

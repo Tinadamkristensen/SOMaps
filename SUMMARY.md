@@ -2,13 +2,27 @@
 
 ## Files in This Repository
 
-### 1. `correlation_analysis_fixed.m`
-The complete corrected MATLAB script with the fix applied. This is a ready-to-use version of your script with the correlation mismatch resolved. The script now includes:
+### MATLAB Scripts
+
+#### 1. `spectrum_correlation_analysis.m` (RECOMMENDED)
+The complete MATLAB script for SPECTRUM study data with bubble plot visualization. Features:
+- Uses **FD_ prefix** for ROI variables (not FA_)
+- Uses **COG_ prefix** for cognitive variables (DART, Verbal_Memory, etc.)
+- **Bubble plot visualization** for the correlation matrix
+- **FDR correction** using Benjamini-Hochberg method
+- **Significant Correlations Table** export to CSV
+- **Automatic scatterplot generation** for all FDR-significant correlations
+- Consistent use of partial correlations throughout
+
+#### 2. `correlation_analysis_fixed.m`
+Original example script with FA_ ROI variables. Includes:
 - **Bubble plot visualization** for the correlation matrix showing effect size, directionality, and significance levels
 - **FDR correction** using Benjamini-Hochberg method
 - Consistent use of partial correlations throughout
 
-### 2. `CORRELATION_FIX_README.md`
+### Documentation Files
+
+#### 3. `CORRELATION_FIX_README.md`
 Comprehensive documentation that explains:
 - The problem in detail
 - Root cause analysis
@@ -16,7 +30,7 @@ Comprehensive documentation that explains:
 - Mathematical explanation of partial correlation
 - Verification steps
 
-### 3. `QUICK_FIX.md`
+#### 4. `QUICK_FIX.md`
 A quick reference guide showing:
 - The exact line that needs to be changed
 - Before/after comparison

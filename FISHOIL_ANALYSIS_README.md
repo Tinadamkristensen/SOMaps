@@ -2,7 +2,7 @@
 
 ## Overview
 
-This MATLAB script (`analyze_fishoil_white_matter.m`) analyzes the effect of fish oil intervention on white matter regions of the brain using mixed-effects models. The script has been enhanced with three major features:
+This MATLAB script (`PUFA_WM_permute.m`) analyzes the effect of fish oil intervention on white matter regions of the brain using mixed-effects models. The script has been enhanced with three major features:
 
 1. **Confidence Intervals for β coefficients**
 2. **Standardized Effect Sizes**

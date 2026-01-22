@@ -8,7 +8,7 @@
 - Your data file: `merged_COPSYCH_WM_DTI_FBA_2.xlsx`
 
 ### Step 1: Update Data Path
-Open `analyze_fishoil_white_matter.m` and update line 8:
+Open `PUFA_WM_permute.m` and update line 8:
 ```matlab
 db1 = readtable('/Users/tinadamkristensen/Desktop/COPSYCH_WM_PUFA/Data/merged_COPSYCH_WM_DTI_FBA_2.xlsx');
 ```

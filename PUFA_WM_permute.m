@@ -302,6 +302,12 @@ valid    = ~isnan(pVals);
 pValid   = pVals(valid);
 roiValid = roiVars(valid);
 
+% Extract valid values for beta, CI, and standardized effects
+betaValid = betaVals(valid);
+betaCI_low_valid = betaCI_low(valid);
+betaCI_high_valid = betaCI_high(valid);
+stdEffects_valid = stdEffects(valid);
+
 m = numel(pValid);
 [sortedP, sortIdx] = sort(pValid);
 r = (1:m)';
@@ -328,8 +334,8 @@ else
         i = sigIdx(k);
         fprintf('%s   raw p = %.4g   FDR p = %.4g   beta = %.5f [%.5f, %.5f]   std.effect = %.3f\n', ...
             roiValid{i}, pValid(i), pFDR(i), ...
-            betaVals(valid)(i), betaCI_low(valid)(i), betaCI_high(valid)(i), ...
-            stdEffects(valid)(i));
+            betaValid(i), betaCI_low_valid(i), betaCI_high_valid(i), ...
+            stdEffects_valid(i));
     end
 end
 

@@ -14,7 +14,7 @@ DELIVERABLES
 ================================================================================
 
 1. MAIN ANALYSIS SCRIPT
-   File: analyze_fishoil_white_matter.m
+   File: PUFA_WM_permute.m
    Lines: 351
    Features:
    ✅ Confidence intervals for β coefficients (95% CI)
@@ -58,7 +58,7 @@ FEATURES IMPLEMENTED
 
 FEATURE 1: CONFIDENCE INTERVALS FOR β
 --------------------------------------
-Implementation: Lines 217-229 in analyze_fishoil_white_matter.m
+Implementation: Lines 217-229 in PUFA_WM_permute.m
 Method: Covariance-based confidence intervals
 Statistics: Uses full coefficient covariance matrix with t-distribution
 Output: Beta coefficients with [lower, upper] 95% CI bounds
@@ -69,7 +69,7 @@ Example Output:
 
 FEATURE 2: STANDARDIZED EFFECT SIZES
 -------------------------------------
-Implementation: Lines 231-235 in analyze_fishoil_white_matter.m
+Implementation: Lines 231-235 in PUFA_WM_permute.m
 Method: Beta / Residual SD (Cohen's d-like)
 Statistics: Uses model RMSE for standardization
 Output: Standardized effect for each ROI
@@ -85,7 +85,7 @@ Example Output:
 
 FEATURE 3: PERMUTATION-BASED GLOBAL TEST
 -----------------------------------------
-Implementation: Lines 113-174 in analyze_fishoil_white_matter.m
+Implementation: Lines 113-174 in PUFA_WM_permute.m
 Method: Non-parametric permutation test
 Permutations: 1,000 (default, adjustable)
 Statistics: Permutes group labels at subject level, refits model
@@ -167,7 +167,7 @@ USAGE INSTRUCTIONS
 
 QUICK START (5 minutes):
 
-1. Open analyze_fishoil_white_matter.m
+1. Open PUFA_WM_permute.m
 2. Update data path on line 8
 3. Run: analyze_fishoil_white_matter
 4. Review output and figures
@@ -226,7 +226,7 @@ FILES IN REPOSITORY
 ================================================================================
 
 MATLAB Scripts:
-  analyze_fishoil_white_matter.m    (351 lines) - Main analysis
+  PUFA_WM_permute.m    (351 lines) - Main analysis
   demo_enhanced_features.m          (180 lines) - Demo script
 
 Documentation:
@@ -284,7 +284,7 @@ NEXT STEPS FOR USER
 1. Review GETTING_STARTED.md for quick setup
 2. Update data path in main script
 3. Run demo_enhanced_features.m to verify installation
-4. Run analyze_fishoil_white_matter.m on your data
+4. Run PUFA_WM_permute.m on your data
 5. Review output and figures
 6. Export results to CSV for further analysis
 7. Consult documentation files as needed

@@ -9,7 +9,7 @@ All requested features have been successfully implemented in the MATLAB script f
 ## 📋 What Was Delivered
 
 ### 1. Main Analysis Script
-**File**: `analyze_fishoil_white_matter.m`
+**File**: `PUFA_WM_permute.m`
 - Complete enhanced MATLAB script with all three requested features
 - 351 lines of well-commented, production-ready code
 - Backward compatible with original workflow
@@ -210,7 +210,7 @@ The script generates **4 figures**:
 
 ### Step 1: Update Data Path
 ```matlab
-% Line 8 in analyze_fishoil_white_matter.m
+% Line 8 in PUFA_WM_permute.m
 db1 = readtable('/your/path/to/merged_COPSYCH_WM_DTI_FBA_2.xlsx');
 ```
 

@@ -157,7 +157,7 @@ pGlobal_perm = mean(F_perm >= F_observed);
 
 ## Files Created
 
-1. **analyze_fishoil_white_matter.m** - Main enhanced analysis script
+1. **PUFA_WM_permute.m** - Main enhanced analysis script
 2. **FISHOIL_ANALYSIS_README.md** - Comprehensive documentation
 3. **CHANGES_SUMMARY.md** - This file (summary of changes)
 

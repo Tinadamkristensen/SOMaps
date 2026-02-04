@@ -1,9 +1,15 @@
 # Understanding mod_seq_raw Transformation in MATLAB
 
+> 📊 **For visual diagrams and illustrations, see [MOD_SEQ_RAW_VISUAL_GUIDE.md](MOD_SEQ_RAW_VISUAL_GUIDE.md)**
+
 ## Question
 What exactly is the transformation `mod_seq_raw` in the provided MATLAB code snippet?
 
-## Answer
+## Quick Answer
+
+**`mod_seq_raw` is NOT a transformation of existing data. It is a NEW SEQUENCE of 100 evenly-spaced values created for plotting smooth prediction lines.**
+
+## Detailed Answer
 
 ### The Code
 ```matlab

@@ -11,7 +11,11 @@ This repository also includes a fix for a MATLAB correlation analysis script whe
 - **[BUBBLE_PLOT_VISUAL.md](BUBBLE_PLOT_VISUAL.md)** - Visual examples and interpretation
 - **[QUICK_FIX.md](QUICK_FIX.md)** - Quick reference for applying the fix
 - **[CORRELATION_FIX_README.md](CORRELATION_FIX_README.md)** - Detailed technical explanation
-- **[MOD_SEQ_RAW_EXPLANATION.md](MOD_SEQ_RAW_EXPLANATION.md)** - Explanation of mod_seq_raw transformation in moderation analysis
+
+### MATLAB Moderation Analysis Documentation
+- **[MOD_SEQ_RAW_QUICK_REF.md](MOD_SEQ_RAW_QUICK_REF.md)** - Quick reference for mod_seq_raw (1-page cheatsheet)
+- **[MOD_SEQ_RAW_EXPLANATION.md](MOD_SEQ_RAW_EXPLANATION.md)** - Full explanation of mod_seq_raw transformation
+- **[MOD_SEQ_RAW_VISUAL_GUIDE.md](MOD_SEQ_RAW_VISUAL_GUIDE.md)** - Visual diagrams and ASCII illustrations
 
 ### MATLAB Scripts
 - **[spectrum_correlation_analysis.m](spectrum_correlation_analysis.m)** - Complete script for SPECTRUM study data (FD_ ROIs, COG_ variables)
